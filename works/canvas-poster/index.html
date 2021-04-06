@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test-Canvas</title>
+  <style>
+    img {
+      width: 500px;
+      height: 500px;
+    }
+
+    #can {
+      /* background-color: black; */
+    }
+  </style>
+</head>
+<body>
+    <div>
+
+    </div>
+    <img src="./assets/a.jpeg" alt="">
+
+    <canvas width="500" height="500" id="can"></canvas>
+
+    <img style="width: 500px; height: 500px;" id="show" src="" alt="">
+    <script>
+      window.onload = function() {
+        const show = document.getElementById('show')
+        const can = document.getElementById('can')
+        const ctx = can.getContext('2d');
+        // console.log(window.devicePixelRatio / 1)
+
+        const ratio = getPixelRatio(ctx)
+
+        // ctx.strokeText(str,100,200);
+
+        // show.src = can.toDataURL('image/jpeg', 1)
+
+        var img = new Image()
+        img.src = './assets/a.jpeg'
+       
+        var oldWidth = can.width;
+        var oldHeight = can.height;
+
+
+        can.width = oldWidth * ratio;
+        can.height = oldHeight * ratio;
+
+
+        can.style.width = oldWidth + 'px';
+        can.style.height = oldHeight + 'px';
+
+        ctx.scale(ratio, ratio);
+
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, 500, 500 )
+          ctx.font = '20px "微软雅黑"';
+        ctx.fillStyle = "red";
+        ctx.textBaseline = "top";
+        ctx.fillText("Top-g", 20, 20)
+          show.src = can.toDataURL('image/jpeg', 1)
+        }
+      }
+
+      const getPixelRatio = function (context) {
+        var backingStore = context.backingStorePixelRatio ||
+            context.webkitBackingStorePixelRatio ||
+            context.mozBackingStorePixelRatio ||
+            context.msBackingStorePixelRatio ||
+            context.oBackingStorePixelRatio ||
+            context.backingStorePixelRatio || 1;
+        return (window.devicePixelRatio || 1) / backingStore;
+    };
+
+    </script>
+</body>
+</html>
