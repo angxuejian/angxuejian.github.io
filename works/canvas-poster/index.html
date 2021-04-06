@@ -11,10 +11,9 @@
       padding: 0;
     }
     #canvas{
-      /* background-color: red; */
       position: fixed;
-      top: -1000px;
-      left: -1000px;
+      top: -99999px;
+      left: -99999px;
     }
     #image{
       width: 100%;
@@ -23,16 +22,20 @@
   </style>
 </head>
 <body>
+    <!-- 画图 -->
+    <canvas id="canvas"></canvas>
 
-    <canvas width="500" height="500" id="canvas"></canvas>
-
-
+    <!-- 预览 -->
     <img id="image" src="" alt="">
-    <!-- <img style="width: 500px; height: 500px;" id="show" src="" alt=""> -->
+
     <script>
       window.onload = function() {
     
         const { outerWidth, outerHeight } = window
+
+        if (outerWidth > 1024) {
+          alert('请移步移动端查看！')
+        }
     
         const predImg = document.getElementById('image')
         const canvas  = document.getElementById('canvas')
@@ -40,14 +43,11 @@
 
         const pixel = getPixelRatio(ctx)
 
-        // canvas.style.width  = `${outerWidth}px`
-        // canvas.style.height = `${outerHeight}px`
-
+        // 根据像素比 将画布放大 - 保证海报清晰度
         canvas.width  = outerWidth  * pixel
         canvas.height = outerHeight * pixel
         ctx.scale(pixel, pixel)
 
-        console.log(canvas.height)
 
         // 背景
         ctx.fillStyle = '#fff'
@@ -90,46 +90,9 @@
             predImg.src = canvas.toDataURL('image/jpeg', 1)
           } 
         }
-
-        return
-        // const show = document.getElementById('show')
-        // const can = document.getElementById('can')
-        // const ctx = can.getContext('2d');
-        // // console.log(window.devicePixelRatio / 1)
-
-        // const ratio = getPixelRatio(ctx)
-
-        // // ctx.strokeText(str,100,200);
-
-        // // show.src = can.toDataURL('image/jpeg', 1)
-
-        // var img = new Image()
-        // img.src = './assets/a.jpeg'
-       
-        // var oldWidth = can.width;
-        // var oldHeight = can.height;
-
-
-        // can.width = oldWidth * ratio;
-        // can.height = oldHeight * ratio;
-
-
-        // can.style.width = oldWidth + 'px';
-        // can.style.height = oldHeight + 'px';
-
-        // ctx.scale(ratio, ratio);
-
-        // img.onload = function() {
-        //   ctx.drawImage(img, 0, 0, 500, 500 )
-        //   ctx.font = '20px "微软雅黑"';
-        // ctx.fillStyle = "red";
-        // ctx.textBaseline = "top";
-        // ctx.fillText("Top-g", 20, 20)
-        //   show.src = can.toDataURL('image/jpeg', 1)
-        // }
       }
 
-      const getPixelRatio = function (context) {
+      function getPixelRatio(context) {
         var backingStore = context.backingStorePixelRatio ||
             context.webkitBackingStorePixelRatio ||
             context.mozBackingStorePixelRatio ||
@@ -137,7 +100,19 @@
             context.oBackingStorePixelRatio ||
             context.backingStorePixelRatio || 1;
         return (window.devicePixelRatio || 1) / backingStore;
-    };
+      }
+
+      /**
+       * 防止 图片跨域、请在服务端运行此页面！
+       * 解决请求跨域后、图片跨域也就解决了！
+       * 
+       * 
+       * 
+       * 前端解决跨域模板 - https://github.com/angxuejian/http-cros-proxy-template
+       * 
+       * 作者: angxuejian
+       * 联系：有问题可以  issues  或者 QQ: 1251537708 找我哦!
+      */
 
     </script>
 </body>
