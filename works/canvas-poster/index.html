@@ -4,64 +4,129 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test-Canvas</title>
+  <title>Moto UI示例</title>
   <style>
-    img {
-      width: 500px;
-      height: 500px;
+    heml, body {
+      margin: 0;
+      padding: 0;
     }
-
-    #can {
-      /* background-color: black; */
+    #canvas{
+      /* background-color: red; */
+      position: fixed;
+      top: -1000px;
+      left: -1000px;
+    }
+    #image{
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
 <body>
-    <div>
 
-    </div>
-    <img src="./assets/a.jpeg" alt="">
+    <canvas width="500" height="500" id="canvas"></canvas>
 
-    <canvas width="500" height="500" id="can"></canvas>
 
-    <img style="width: 500px; height: 500px;" id="show" src="" alt="">
+    <img id="image" src="" alt="">
+    <!-- <img style="width: 500px; height: 500px;" id="show" src="" alt=""> -->
     <script>
       window.onload = function() {
-        const show = document.getElementById('show')
-        const can = document.getElementById('can')
-        const ctx = can.getContext('2d');
-        // console.log(window.devicePixelRatio / 1)
+    
+        const { outerWidth, outerHeight } = window
+    
+        const predImg = document.getElementById('image')
+        const canvas  = document.getElementById('canvas')
+        const ctx     = canvas.getContext('2d')
 
-        const ratio = getPixelRatio(ctx)
+        const pixel = getPixelRatio(ctx)
 
-        // ctx.strokeText(str,100,200);
+        // canvas.style.width  = `${outerWidth}px`
+        // canvas.style.height = `${outerHeight}px`
 
-        // show.src = can.toDataURL('image/jpeg', 1)
+        canvas.width  = outerWidth  * pixel
+        canvas.height = outerHeight * pixel
+        ctx.scale(pixel, pixel)
 
-        var img = new Image()
+        console.log(canvas.height)
+
+        // 背景
+        ctx.fillStyle = '#fff'
+        ctx.fillRect(0, 0, outerWidth, outerHeight)
+
+        // 顶部图片
+        const img = new Image()
         img.src = './assets/a.jpeg'
-       
-        var oldWidth = can.width;
-        var oldHeight = can.height;
-
-
-        can.width = oldWidth * ratio;
-        can.height = oldHeight * ratio;
-
-
-        can.style.width = oldWidth + 'px';
-        can.style.height = oldHeight + 'px';
-
-        ctx.scale(ratio, ratio);
-
         img.onload = function() {
-          ctx.drawImage(img, 0, 0, 500, 500 )
-          ctx.font = '20px "微软雅黑"';
-        ctx.fillStyle = "red";
-        ctx.textBaseline = "top";
-        ctx.fillText("Top-g", 20, 20)
-          show.src = can.toDataURL('image/jpeg', 1)
+          let { width, height } = img
+ 
+          let x = outerWidth * 0.025
+          let p_width  = outerWidth * 0.95
+          let p_height = (p_width / width) * height
+
+          ctx.drawImage(img, x, 10, p_width, p_height)
+
+
+          // 文字与图片
+          ctx.fillStyle = "#333";
+          ctx.font = 'normal bold 15px sans-serif'
+          ctx.fillText("唯有头顶之上一片晴空", x, outerHeight - 90)
+          
+          ctx.fillStyle = '#666666'
+          ctx.font = 'normal 500 12px sans-serif'
+          ctx.fillText('angxuejian', x, outerHeight - 60)
+
+          // 60 为 图片宽高大小
+          const logo = new Image()
+          logo.src = './assets/b.jpg'
+          logo.onload = function() {
+            let right_x = p_width - 60
+            ctx.drawImage(logo,right_x, outerHeight-110, 60, 60)
+            
+            // 底部logo
+            ctx.fillStyle = '#666666'
+            ctx.font = 'normal 500 12px sans-serif'
+            ctx.fillText('Moto UI示例', right_x / 2, outerHeight - 10)
+            
+            predImg.src = canvas.toDataURL('image/jpeg', 1)
+          } 
         }
+
+        return
+        // const show = document.getElementById('show')
+        // const can = document.getElementById('can')
+        // const ctx = can.getContext('2d');
+        // // console.log(window.devicePixelRatio / 1)
+
+        // const ratio = getPixelRatio(ctx)
+
+        // // ctx.strokeText(str,100,200);
+
+        // // show.src = can.toDataURL('image/jpeg', 1)
+
+        // var img = new Image()
+        // img.src = './assets/a.jpeg'
+       
+        // var oldWidth = can.width;
+        // var oldHeight = can.height;
+
+
+        // can.width = oldWidth * ratio;
+        // can.height = oldHeight * ratio;
+
+
+        // can.style.width = oldWidth + 'px';
+        // can.style.height = oldHeight + 'px';
+
+        // ctx.scale(ratio, ratio);
+
+        // img.onload = function() {
+        //   ctx.drawImage(img, 0, 0, 500, 500 )
+        //   ctx.font = '20px "微软雅黑"';
+        // ctx.fillStyle = "red";
+        // ctx.textBaseline = "top";
+        // ctx.fillText("Top-g", 20, 20)
+        //   show.src = can.toDataURL('image/jpeg', 1)
+        // }
       }
 
       const getPixelRatio = function (context) {
