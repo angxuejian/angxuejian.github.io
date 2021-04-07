@@ -6,4 +6,4 @@
 
 
 ## front-end.basics
-> [《CSS-样式小知识》](front-end.basics/css.html)
+> [《CSS-样式》](front-end.basics/css.html)
