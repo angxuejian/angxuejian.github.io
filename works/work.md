@@ -11,4 +11,5 @@
 > ![大下姜乡立方](/image/e.jpg)
 > ![好奇魔方](/image/f.jpg)
 > ![智慧大下姜](/image/g.jpg)<br><br>
-> [《中粮·福临门号》](https://hos.smartbit.top/h5/DAMI/)
+> [《中粮·福临门号》](https://hos.smartbit.top/h5/DAMI/)<br>
+> [《超山梅花节 “梅海奇旅”》](https://mhql.smartbit.top)
