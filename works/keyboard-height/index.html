@@ -27,13 +27,13 @@
     }
     input {
       position: absolute;
-      top: 20px;
+      top: 20%;
       left: 20px;
       width: 300px;
     }
     .height {
       position: absolute;
-      top: 80px;
+      top: 30%;
       left: 50px;
       font-size: 18px;
       color: red;
@@ -49,16 +49,16 @@
   </div>
 
   <script>
-
+     const app = document.getElementById('app')
     window.onload = function() {
-      const app = document.getElementById('app')
-      app.style.width = window.outerHeight
+      document.getElementsByTagName('body')[0].style = 'height: ' + window.outerHeight + 'px'
+      app.style = 'height: ' + window.outerHeight + 'px'
     }
 
     function getValue() {
       console.log('触发了')
       setTimeout(() => {
-        document.getElementsByClassName('height')[0].innerText = window.outerHeight
+        document.getElementsByClassName('height')[0].innerText = `${window.outerHeight} - ${app.style.height}`
       }, 1000)
     }
 
