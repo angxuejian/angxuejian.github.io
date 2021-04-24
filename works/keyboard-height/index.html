@@ -23,7 +23,6 @@
       min-width: 320px;
       height: 100%;
       width: 100%;
-      position: fixed;
       top: 0;
     }
     input {
@@ -32,39 +31,55 @@
       left: 20px;
       width: 300px;
     }
-    .height {
-      position: absolute;
-      top: 30%;
-      left: 50px;
+
+    .button {
+      width: 100%;
+      height: 45px;
+      line-height: 45px;
+      color: #fff;
+      background-color: blue;
+      text-align: center;
       font-size: 18px;
-      color: blue;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      max-width: 450px;
+      min-width: 320px;
     }
   </style>
 </head>
 <body>
   
   <div id='app'>
-    <input onfocus="getValue()" onblur="clearValue()" placeholder="请输入姓名" type="text">
-  
-    <div class="height"></div>
+    <input placeholder="请输入姓名" type="text">
+
+    <div class="button">确认</div>
   </div>
 
   <script>
-     const app = document.getElementById('app')
+     
     window.onload = function() {
-      document.getElementsByTagName('body')[0].style = 'height: ' + window.outerHeight + 'px'
+      const body = document.getElementsByTagName('body')[0]
+      const app = document.getElementById('app')
+
+      body.style = 'height: ' + window.outerHeight + 'px'
       app.style = 'height: ' + window.outerHeight + 'px'
-    }
 
-    function getValue() {
-      console.log('触发了')
-      setTimeout(() => {
-        document.getElementsByClassName('height')[0].innerText = `${window.outerHeight} - ${app.style.height}`
-      }, 1000)
-    }
+      let isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 
-    function clearValue() {
-      document.getElementsByClassName('height')[0].innerText = ''
+      if (isiOS) {
+        app.style = 'position: relative;'
+      } else {
+        app.style = 'position: fixed;'
+      }
+
+
+      /**
+       * ios下 fixed布局会有问题、使用 relative布局 即可、ios默认不会顶起页面、使用 fixed布局才会
+       * 
+       * ios     使用 相等定位
+       * android 使用 固定定位
+       * */ 
 
     }
   </script>
