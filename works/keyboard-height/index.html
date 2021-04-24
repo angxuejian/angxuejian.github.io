@@ -24,6 +24,7 @@
       height: 100%;
       width: 100%;
       top: 0;
+      position: fixed;
     }
     input {
       position: absolute;
@@ -74,15 +75,15 @@
       body.style = 'height: ' + window.outerHeight + 'px'
       app.style = 'height: ' + window.outerHeight + 'px'
 
-      let isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+      // let isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 
-      if (isiOS) {
-        app.style = 'position: relative;'
-      } else {
-        app.style = 'position: fixed;'
-      }
+      // if (isiOS) {
+      //   app.style = 'position: relative;'
+      // } else {
+      //   app.style = 'position: fixed;'
+      // }
 
-      document.getElementsByClassName('height')[0].innerText = isiOS
+      // document.getElementsByClassName('height')[0].innerText = isiOS
 
 
       /**
