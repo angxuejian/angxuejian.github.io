@@ -37,7 +37,7 @@
       height: 45px;
       line-height: 45px;
       color: #fff;
-      background-color: red;
+      background-color: rgb(101, 135, 230);
       text-align: center;
       font-size: 18px;
       position: fixed;
@@ -88,11 +88,13 @@
 
     function focusInput() {
       setTimeout(() => {
-        btn.style.opacity = 0
-      }, 500)
+        btn.style.display = 'none'
+      }, 100)
     }
     function blurInput() {
-      btn.style.opacity = 1
+      setTimeout(() => {
+        btn.style.display = 'block'
+      }, 100)
     }
   </script>
 </body>
