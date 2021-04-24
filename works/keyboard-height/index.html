@@ -50,6 +50,11 @@
 
   <script>
 
+    window.onload = function() {
+      const app = document.getElementById('app')
+      app.style.width = window.outerHeight
+    }
+
     function getValue() {
       console.log('触发了')
       setTimeout(() => {
