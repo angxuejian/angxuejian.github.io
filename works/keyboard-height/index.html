@@ -68,12 +68,14 @@
     const body = document.getElementsByTagName('body')[0]
     const app  = document.getElementById('app')
     const btn  = document.getElementsByClassName('button')[0]
+    const windowH = window.outerHeight
+    let isiOS  = false 
 
     window.onload = function() {
-      body.style.height = `${window.outerHeight}px`
-      app.style.height = `${window.outerHeight}px`
+      body.style.height = `${windowH}px`
+      app.style.height = `${windowH}px`
 
-      let isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+      isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 
       app.style.position = isiOS ? 'relative' : 'fixed'
 
@@ -86,16 +88,32 @@
        * */ 
     }
 
+    // ios 机型下
     function focusInput() {
+      if (!isiOS) return
       setTimeout(() => {
         btn.style.display = 'none'
       }, 100)
     }
     function blurInput() {
+      if (!isiOS) return
       setTimeout(() => {
         btn.style.display = 'block'
       }, 100)
     }
+
+    // android机型下
+    window.addEventListener('resize', function() {
+      if (window.outerHeight < windowH) {
+        setTimeout(() => {
+          btn.style.display = 'none'
+        }, 100)
+      } else {
+        setTimeout(() => {
+          btn.style.display = 'block'
+        }, 100)
+      }
+    })
   </script>
 </body>
 </html>
