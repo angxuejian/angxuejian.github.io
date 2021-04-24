@@ -47,12 +47,6 @@
       min-width: 320px;
     }
 
-    .height {
-      position: absolute;
-      top: 30%;
-      font-size: 18px;
-      /* color: re; */
-    }
   </style>
 </head>
 <body>
@@ -105,9 +99,7 @@
     // android机型下
     window.addEventListener('resize', function() {
       if (window.outerHeight < windowH) {
-        // setTimeout(() => {
         btn.style.display = 'none'
-        // }, 100)
       } else {
         setTimeout(() => {
           btn.style.display = 'block'
