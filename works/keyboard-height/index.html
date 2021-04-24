@@ -59,30 +59,24 @@
 <body>
   
   <div id='app'>
-    <input placeholder="请输入姓名" type="text">
+    <input onfocus="focusInput()" onblur="blurInput()" placeholder="请输入姓名" type="text">
 
     <div class="button">确认</div>
 
   </div>
 
   <script>
-     
-    window.onload = function() {
-      const body = document.getElementsByTagName('body')[0]
-      const app = document.getElementById('app')
+    const body = document.getElementsByTagName('body')[0]
+    const app  = document.getElementById('app')
+    const btn  = document.getElementsByClassName('button')[0]
 
+    window.onload = function() {
       body.style.height = `${window.outerHeight}px`
-      app.style.height = `${window.outerHeight}px`
+      // app.style.height = `${window.outerHeight}px`
 
       let isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 
-      if (isiOS) {
-        app.style.position = 'relative'
-      } else {
-        app.style.position = 'fixed'
-      }
-
-      // document.getElementsByClassName('height')[0].innerText = isiOS
+      app.style.position = isiOS ? 'relative' : 'fixed'
 
 
       /**
@@ -91,7 +85,13 @@
        * ios     使用 相等定位
        * android 使用 固定定位
        * */ 
+    }
 
+    function focusInput() {
+      btn.style.opacity = 0
+    }
+    function blurInput() {
+      btn.style.opacity = 1
     }
   </script>
 </body>
