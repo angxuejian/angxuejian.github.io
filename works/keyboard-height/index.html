@@ -43,7 +43,7 @@
 <body>
   
   <div id='app'>
-    <input onfocus="getValue()" placeholder="请输入姓名" type="text">
+    <input onfocus="getValue()" onblur="clearValue()" placeholder="请输入姓名" type="text">
   
     <div class="height"></div>
   </div>
@@ -52,7 +52,14 @@
 
     function getValue() {
       console.log('触发了')
-      document.getElementsByClassName('height')[0].innerText = window.outerHeight
+      setTimeout(() => {
+        document.getElementsByClassName('height')[0].innerText = window.outerHeight
+      }, 1000)
+    }
+
+    function clearValue() {
+      document.getElementsByClassName('height')[0].innerText = ''
+
     }
   </script>
 </body>
