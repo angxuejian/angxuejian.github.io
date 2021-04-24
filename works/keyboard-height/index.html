@@ -72,18 +72,18 @@
       const body = document.getElementsByTagName('body')[0]
       const app = document.getElementById('app')
 
-      body.style = 'height: ' + window.outerHeight + 'px'
-      app.style = 'height: ' + window.outerHeight + 'px'
+      body.style.height = `${window.outerHeight}px`
+      app.style.height = `${window.outerHeight}px`
 
-      // let isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+      let isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 
-      // if (isiOS) {
-      //   app.style = 'position: relative;'
-      // } else {
-      //   app.style = 'position: fixed;'
-      // }
+      if (isiOS) {
+        app.style.position = 'relative'
+      } else {
+        app.style.position = 'fixed'
+      }
 
-      // document.getElementsByClassName('height')[0].innerText = isiOS
+      document.getElementsByClassName('height')[0].innerText = isiOS
 
 
       /**
