@@ -60,6 +60,9 @@
         height: 18vh;
         
       }
+      .win-logo {
+        height: 10vh !important;
+      }
     }
   </style>
 </head>
@@ -89,7 +92,7 @@
 
         const html = document.getElementsByTagName('html')[0]
         const app  = document.getElementById('app')
-
+        const logo = document.getElementsByClassName('wx-logo')[0]
 
         let style = ''
 
@@ -102,6 +105,9 @@
         if (/Windows /ig.test(window.navigator.userAgent)) {
           app.style.width = '820px'
           app.style.height = '450px'
+          logo.classList.add('win-logo')
+        } else {
+          logo.classList.remove('win-logo')
         }
 
         html.style.cssText = style
