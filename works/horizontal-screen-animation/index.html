@@ -38,11 +38,10 @@
       height: 100%;
     }
     .wx-logo {
-      /* width: 60px; */
-      height: 60px;
+      height: 10vh;
       position: absolute;
       right: 10px;
-      top: 10px;
+      bottom: 10px;
     }
 
      /* 竖屏状态下的样式 */
@@ -57,6 +56,10 @@
       #app {
         background-color: #fff;
       }
+      .wx-logo {
+        height: 18vh;
+        
+      }
     }
   </style>
 </head>
@@ -65,7 +68,7 @@
     <div id="app">
 
       <!-- 预览 -->
-      <img id="image" src="./assets/a.jpg" alt="">
+      <img id="image" src="./assets/a.jpeg" alt="">
       <img class="wx-logo" src="./assets/b.png" alt="">
     </div>
 
@@ -81,28 +84,19 @@
 
       function setDomSize() {
 
-        const innerWidth = document.documentElement.clientWidth
-        const innerHeight = document.documentElement.clientHeight
-
-        const iWidth = innerWidth
-        const iHeight = innerHeight
-
-        // innerWidth >= 450 ? 450 :   -  innerHeight >= 820 ? 820 : 
-
+        const iWidth = document.documentElement.clientWidth
+        const iHeight = document.documentElement.clientHeight
 
         const html = document.getElementsByTagName('html')[0]
         const app  = document.getElementById('app')
 
- 
 
         let style = ''
 
         if (innerWidth <= innerHeight) { // 在竖屏状态下旋转成横屏
           let origin = iWidth / 2
           style = `width: ${iHeight}px; height: ${iWidth}px; transform-origin: ${origin}px ${origin}px; transform: rotate(90deg)`
-        } else {
-          style = `width: ${iWidth}px; height: ${iHeight}px`
-        }
+        } 
 
         // window下 显示的宽高
         if (/Windows /ig.test(window.navigator.userAgent)) {
