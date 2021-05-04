@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html style="overflow: auto" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moto UI示例 - 横屏</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      width: 100%;
+      height: 100%;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+ 
+    #app {
+      max-width: 1366px;
+      min-width: 568px;
+      max-height: 1024px;
+      min-height: 320px;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      overflow-x: scroll;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #canvas{
+      position: fixed;
+      top: 999999px;
+      left: 999999px;
+    }
+    #image {
+      width: 100%;
+    }
+
+     /* 竖屏状态下的样式 */
+    @media screen and (orientation: portrait) {
+      #app {
+        background-color: #fff;
+      }
+    }
+
+    /* 横屏状态下的样式 */
+    @media screen and (orientation: landscape) {
+      #app {
+        background-color: #fff;
+      }
+    }
+  </style>
+</head>
+<body>
+
+    <div id="app">
+
+
+      <!-- 预览 -->
+      <img id="image" src="" alt="">
+    </div>
+
+  
+
+    <script>
+      
+      window.addEventListener('resize', setDomSize)
+
+      window.onload = function() {
+        setDomSize()      
+      }
+
+      function setDomSize() {
+
+        const innerWidth = document.documentElement.clientWidth
+        const innerHeight = document.documentElement.clientHeight
+
+        // html 的宽高
+        const iWidth  =  innerWidth <= 320 ? 320 : innerWidth
+        const iHeight =  innerHeight <= 568 ? 568 : innerHeight
+
+        // innerWidth >= 450 ? 450 :   -  innerHeight >= 820 ? 820 : 
+
+        // canvas 的宽高
+        const ctxWidth  = iHeight
+        let   ctxHeight = (innerWidth >= 320) ? 820 : innerWidth
+
+        if (innerHeight >= 1024 && innerHeight <= 1366) ctxHeight = innerHeight
+
+        
+
+        const html = document.getElementsByTagName('html')[0]
+        const app  = document.getElementById('app')
+
+        const predImg = document.getElementById('image')
+        const canvas  =document.createElement('canvas')
+        const ctx     = canvas.getContext('2d')
+        const pixel = getPixelRatio(ctx)
+        
+
+        canvas.id = 'canvas'
+        canvas.width = ctxWidth * pixel
+        canvas.height = ctxHeight * pixel
+        ctx.scale(pixel, pixel)
+
+        let style = ''
+
+        if (innerWidth <= innerHeight) { // 在竖屏状态下旋转成横屏
+          let origin = iWidth / 2
+          style = `width: ${iHeight}px; height: ${iWidth}px; transform-origin: ${origin}px ${origin}px; transform: rotate(90deg)`
+        }
+
+        // window下 显示的宽高
+        if (/Windows /ig.test(window.navigator.userAgent)) {
+          app.style.width = '820px'
+          app.style.height = '450px'
+        }
+
+        html.style.cssText = style
+
+        drawPoster(canvas, ctx, predImg, ctxWidth, ctxHeight)
+      }
+
+      function drawPoster(canvas, ctx, predImg, ctxWidth, ctxHeight) {
+         // 背景
+        ctx.fillStyle = '#fff'
+        ctx.fillRect(0, 0, ctxWidth, ctxHeight)
+
+        // 顶部图片
+        const img = new Image()
+        img.src = './assets/a.jpeg'
+        img.onload = function() {
+          let { width, height } = img
+          let x = ctxWidth * 0.025
+          let p_width  = ctxWidth * 0.95
+          let p_height = (p_width / width) * height
+
+          ctx.drawImage(img, x, 20, p_width, p_height)
+
+          // 文字与图片
+          ctx.fillStyle = "#333";
+          ctx.font = 'normal bold 15px sans-serif'
+          ctx.fillText("唯有头顶之上一片晴空", x, ctxHeight - 90)
+          
+          ctx.fillStyle = '#666666'
+          ctx.font = 'normal 500 12px sans-serif'
+          ctx.fillText('angxuejian', x, ctxHeight - 60)
+          // 60 为 图片宽高大小
+          const logo = new Image()
+          logo.src = './assets/b.jpg'
+          logo.onload = function() {
+            let right_x = p_width - 60
+            ctx.drawImage(logo,right_x, ctxHeight-110, 60, 60)
+            
+            // 底部logo
+            ctx.fillStyle = '#666666'
+            ctx.font = 'normal 500 12px sans-serif'
+            ctx.fillText('Moto UI示例', right_x / 2, ctxHeight - 10)
+            
+            predImg.src = canvas.toDataURL('image/jpeg', 1)
+          } 
+        }
+      }
+
+      function getPixelRatio(context) {
+        var backingStore = context.backingStorePixelRatio ||
+            context.webkitBackingStorePixelRatio ||
+            context.mozBackingStorePixelRatio ||
+            context.msBackingStorePixelRatio ||
+            context.oBackingStorePixelRatio ||
+            context.backingStorePixelRatio || 1;
+        return (window.devicePixelRatio || 1) / backingStore;
+      }
+      
+
+      /**
+       * 旋转根节点、达到在竖屏状态下 显示横屏、在适应横屏样式即可。
+       * 
+       * 
+       * 
+       * 作者: angxuejian
+       * 联系：有问题可以  QQ: 1251537708 找我哦!
+      */
+
+    </script>
+</body>
+</html>
