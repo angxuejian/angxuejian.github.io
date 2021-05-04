@@ -5,7 +5,7 @@
 
 > ![Moto UI示例](image/a.jpg)
 > ![鹿安校园](image/b.jpg)<br><br>
-> [《Canvas-海报》](works/canvas-poster)<br>
+> [《Canvas-海报》](works/canvas-poster/public)<br>
 > [《H5键盘高度》](works/keyboard-height)<br>
 
 这里是[公司项目](works/work.md)
