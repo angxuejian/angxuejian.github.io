@@ -44,13 +44,9 @@
 
     <!-- <input onchange="getFile(event)" type="file" accept="image/*"> -->
 
-    <img class="prev none" src="" alt="">
+    <!-- <img class="prev none" src="" alt=""> -->
 
-    <img class="page-bc" src="./assets/bc.png" alt="">
-    <div class="box">
-      <img class="bc-avatar" src="" alt="">
-    </div>
-    <!-- <canvas id="canvas"></canvas> -->
+    <canvas ontouchend='end(event)' ontouchmove='move1(event)' ontouchstart='start(event)' id="canvas"></canvas>
 
   </div>
 
@@ -71,7 +67,7 @@
     let yy = 0
     let ww = 0
     let hh = 0
-
+    let t = {}
 
 
     function getFile(event) {
@@ -79,52 +75,43 @@
 
       const reader = new FileReader()
       reader.readAsDataURL(file)
-      reader.onload = function() {
+      reader.onload = function () {
 
-        drawImage(reader.result) 
+        drawImage(reader.result)
       }
     }
 
-    window.onload = function() {
-      // drawImage()
-      getAvatar()
-    }
-
-    function getAvatar() {
-      const img = new Image()
-      img.src = './assets/a.jpg'
-      img.onload = function() {
-        const [x, y, w, h] = getAspectFill(img.width, img.height, 450, 450)
-        xx = 38;
-        yy = 210
-        ww = w
-        hh = h
-        avatar.style = `top: ${y}px; left: ${x}px;width:${w}px;height: ${h}px`
-        avatar.src = img.src
-      }
-
-      
+    window.onload = function () {
+      drawImage()
     }
 
 
-    avatar.addEventListener('touchmove', function(event) {
+    function move1(event) {
 
       if (!isTouch) return
+      event.preventDefault()
+
       let e = event.touches[0];
 
       let offsetX = e.pageX - pageX;
       let offsetY = e.pageY - pageY;
+      if (hh === 450) {
 
-      console.log(offsetX, offsetY)
-      avatar.style.top = offsetY + 'px'
-      avatar.style.left = offsetX + 'px'
+        t.sx = startX + offsetX;
 
-      // pageX = e.pageX
-      // pageY = e.pageY
+        console.log(t.sx)
+        if (t.sx <= 0) {
+          t.sx = 0;
+        } else if (t.sx >= (hh - 450)) {
+          t.sx = hh - 450;
+        }
+      }
 
-    })
+      drawImage('', t.sx, 0)
+      // t.cutImage();
+    }
 
-    avatar.addEventListener('touchstart', function(event) {
+    function start(event) {
       let e = event.touches[0];
 
       isTouch = true
@@ -134,47 +121,58 @@
 
       startX = xx;
       startY = yy;
-    })
+    }
 
-    avatar.addEventListener('touchend', function(event) {
+    function end(evnet) {
+      console.log('33')
       isTouch = false
-    })
-   
-    function drawImage(src) {
-      canvas.width  = 375
+    }
+
+    function drawImage(src, sx = 0, sy = 0) {
+      canvas.width = 375
       canvas.height = 812
       const ctx = canvas.getContext('2d')
 
+      ctx.clearRect(0, 0, 375, 812)
       const img = new Image()
 
-      img.src = src || './assets/a.jpg'
+      img.src = src || './assets/c.jpg'
       img.onload = function () {
        
-        const [dw, dh] = getAspectFill(img.width, img.height, 450, 450)
-        
-        console.log(dw, dh)
-        ctx.drawImage(img, (375 - dw) / 2, (812 - dh) / 2, dw, dh)
+        const [x, y, dw, dh] = getAspectFill(img.width, img.height, 450, 450)
+
+        if (!sx) {
+          ww = dw
+          hh = dh
+          xx = 38
+          yy = 210
+
+          ctx.drawImage(img, x, y, dw, dh)
+        } else {
+          ctx.drawImage(img,sx, (450 - sy) / 2, 450, 450, x, y, dw, dh)
+        }
 
         // prev.src = canvas.toDataURL('image/jpeg', 1)
         // return
         const img2 = new Image()
         img2.src = './assets/bc.png'
-        img2.onload = function() {
-          ctx.globalAlpha = 0.8
+        img2.onload = function () {
+          ctx.globalAlpha = 0.5
           ctx.drawImage(img2, 0, 0, 375, 812)
 
-          prev.classList.remove('none')
-          input.classList.add('none')
-          prev.src = canvas.toDataURL('image/jpeg', 1)
+          // prev.classList.remove('none')
+          // input.classList.add('none')
+          // prev.src = canvas.toDataURL('image/jpeg', 1)
         }
 
-       
       }
     }
 
 
+
+
     function getAspectFill(width, height, styleW, styleH) {
-  
+
       let [dw, dh] = []
       let scale = width / height
 
@@ -189,7 +187,7 @@
       let x = (375 - dw) / 2
       let y = (812 - dh) / 2
       return [x, y, dw, dh]
-      }
+    }
   </script>
 </body>
 
