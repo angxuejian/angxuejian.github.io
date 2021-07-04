@@ -27,6 +27,9 @@
       width: 100%;
       overflow: hidden;
 
+      display: flex;
+      align-items: center;
+      justify-content: center;
       /* position: relative;
       display: flex;
       align-items: center;
@@ -39,11 +42,15 @@
 
   <div id="app">
 
-    <input onchange="getFile(event)" type="file" accept="image/*">
+    <!-- <input onchange="getFile(event)" type="file" accept="image/*"> -->
 
     <img class="prev none" src="" alt="">
 
-    <canvas id="canvas"></canvas>
+    <img class="page-bc" src="./assets/bc.png" alt="">
+    <div class="box">
+      <img class="bc-avatar" src="" alt="">
+    </div>
+    <!-- <canvas id="canvas"></canvas> -->
 
   </div>
 
@@ -51,6 +58,7 @@
     const input = document.getElementsByTagName('input')[0]
     const canvas = document.getElementById('canvas')
     const prev = document.getElementsByClassName('prev')[0]
+    const avatar = document.getElementsByClassName('bc-avatar')[0]
 
     let pageX = 0
     let pageY = 0
@@ -58,6 +66,11 @@
     let startX = 0
     let startY = 0
     let isTouch = false
+
+    let xx = 0
+    let yy = 0
+    let ww = 0
+    let hh = 0
 
 
 
@@ -72,6 +85,60 @@
       }
     }
 
+    window.onload = function() {
+      // drawImage()
+      getAvatar()
+    }
+
+    function getAvatar() {
+      const img = new Image()
+      img.src = './assets/a.jpg'
+      img.onload = function() {
+        const [x, y, w, h] = getAspectFill(img.width, img.height, 450, 450)
+        xx = 38;
+        yy = 210
+        ww = w
+        hh = h
+        avatar.style = `top: ${y}px; left: ${x}px;width:${w}px;height: ${h}px`
+        avatar.src = img.src
+      }
+
+      
+    }
+
+
+    avatar.addEventListener('touchmove', function(event) {
+
+      if (!isTouch) return
+      let e = event.touches[0];
+
+      let offsetX = e.pageX - pageX;
+      let offsetY = e.pageY - pageY;
+
+      console.log(offsetX, offsetY)
+      avatar.style.top = offsetY + 'px'
+      avatar.style.left = offsetX + 'px'
+
+      // pageX = e.pageX
+      // pageY = e.pageY
+
+    })
+
+    avatar.addEventListener('touchstart', function(event) {
+      let e = event.touches[0];
+
+      isTouch = true
+
+      pageX = e.pageX;
+      pageY = e.pageY;
+
+      startX = xx;
+      startY = yy;
+    })
+
+    avatar.addEventListener('touchend', function(event) {
+      isTouch = false
+    })
    
     function drawImage(src) {
       canvas.width  = 375
@@ -84,7 +151,8 @@
       img.onload = function () {
        
         const [dw, dh] = getAspectFill(img.width, img.height, 450, 450)
- 
+        
+        console.log(dw, dh)
         ctx.drawImage(img, (375 - dw) / 2, (812 - dh) / 2, dw, dh)
 
         // prev.src = canvas.toDataURL('image/jpeg', 1)
@@ -118,8 +186,9 @@
         dw = styleH * scale
         dh = styleH
       }
-
-      return [dw, dh]
+      let x = (375 - dw) / 2
+      let y = (812 - dh) / 2
+      return [x, y, dw, dh]
       }
   </script>
 </body>
