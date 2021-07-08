@@ -68,7 +68,8 @@
       h: 340,
       top: 0,
       left: 0,
-      diffH: 0
+      diffH: 0,
+      diffW: 0
     } // 裁剪图片 的 上左距离、宽高
     const CTX_DRAW = {
       w: 340,
@@ -120,12 +121,6 @@
         ctx.scale(pixel, pixel)
         ctx.drawImage(img, 0, 0, w, h)
 
-        // 画布默认 x、y
-        CTX_DRAW.x = (DEFAULTS.w - CTX_DRAW.w) / 2
-        CTX_DRAW.y = (DEFAULTS.h - CTX_DRAW.h) / 2
-        CTX_DRAW.h = h
-        CTX_DRAW.w = w
-
         // 裁剪框默认 距离
         BOX_.top  = (window.innerHeight - BOX_.h) / 2
         BOX_.left = (window.innerWidth  - BOX_.w) / 2
@@ -136,11 +131,18 @@
         T_IMG_.h = h
         T_IMG_.top  = (window.innerHeight - h) / 2
         T_IMG_.left = (window.innerWidth  - w) / 2
-        T_IMG_.diffH = T_IMG_.top - BOX_.top
+        T_IMG_.diffH = T_IMG_.top  - BOX_.top
+        T_IMG_.diffW = T_IMG_.left - BOX_.left
         T_IMG.style = `width: ${w}px; height: ${h}px;)`
 
         formData.src = canvas.toDataURL('image/jpeg', 1)
         T_IMG.src = formData.src
+
+        // 画布默认 x、y
+        CTX_DRAW.x = T_IMG_.left - BOX_.left
+        CTX_DRAW.y = T_IMG_.top - BOX_.top
+        CTX_DRAW.h = h
+        CTX_DRAW.w = w
       }
     }
 
@@ -150,7 +152,6 @@
     T_IMG.addEventListener('touchend', touchEnd, { passive: false })
 
     function touchStart(event) {
-      event.preventDefault(); 
       const touches = event.touches
       const leng    = touches.length 
       isTouch = true
@@ -170,13 +171,12 @@
     }
 
     function touchEnd(event) {
-    
+      
       isTouch = false
-      isDrag  = false
 
-      // if (T_IMG_.left <= BOX_.left) {
-      //   T_IMG.style.left = BOX_.left + 'px'
-      // }
+      if (isDrag) dragEnd()
+
+      isDrag  = false
     }
 
 
@@ -194,12 +194,9 @@
         canvas.height = DEFAULTS.h * pixel
         ctx.scale(pixel, pixel)
 
-        CTX_DRAW.x = T_IMG_.left === BOX_.left ? T_IMG_.left - BOX_.left : T_IMG_.left
-        CTX_DRAW.y = T_IMG_.top - BOX_.top === T_IMG_.diffH ? T_IMG_.top - BOX_.top : T_IMG_.top - Math.abs(T_IMG_.diffH)
 
- 
         ctx.drawImage(img,  CTX_DRAW.x, CTX_DRAW.y,  CTX_DRAW.w,  CTX_DRAW.h)
-  
+
         const src = canvas.toDataURL('image/jpeg', 1)
         preview.src = src
         crop.classList.add('none')
