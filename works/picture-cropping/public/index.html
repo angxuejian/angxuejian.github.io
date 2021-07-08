@@ -1,194 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>图片裁剪</title>
-  <link rel="stylesheet" href="./index.css">
+
+  <link rel="stylesheet" href="./css/index.css">
+
   <style>
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
+    html, body {
       padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #app {
-      background-color: #000;
-      /* max-width: 450px;
-      min-width: 320px; */
-      height: 100%;
+      margin: 0;
       width: 100%;
-      overflow: hidden;
-
+      height: 100%;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      /* position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center; */
     }
   </style>
 </head>
-
 <body>
+  
+  <div id='app'>
+    
+    <div id='crop'>
+      <div class="box"></div>
+      <img  class="touch-img" src="" alt="">
 
-  <div id="app">
+      <div class="buts">
+        <div></div>
+        <div onclick="saveImg()" class="confirm">确认</div>
+      </div>
+    </div>
 
-    <!-- <input onchange="getFile(event)" type="file" accept="image/*"> -->
-
-    <!-- <img class="prev none" src="" alt=""> -->
-
-    <canvas ontouchend='end(event)' ontouchmove='move1(event)' ontouchstart='start(event)' id="canvas"></canvas>
-
+    <img id="preview" class="none" src="" alt="">
   </div>
 
+  <script src="./js/touch.js"></script>
   <script>
-    const input = document.getElementsByTagName('input')[0]
-    const canvas = document.getElementById('canvas')
-    const prev = document.getElementsByClassName('prev')[0]
-    const avatar = document.getElementsByClassName('bc-avatar')[0]
+    const app     = document.getElementById('app')
+    const box     = document.getElementsByClassName('box')[0]
+    const crop    = document.getElementById('crop')
+    const T_IMG   = document.getElementsByClassName('touch-img')[0]
+    const preview = document.getElementById('preview')
+    const isTouchEvent = 'ontouchstart' in document
+    const formData = {
+      src: '',
+      file: ''
+    }
+    const DEFAULTS = {
+      w: 340,
+      h: 340,
+    } // 默认 图片宽、高、比例
+    const BOX_ = {
+      w: 340,
+      h: 340,
+      top: 0,
+      left: 0
+    } // 裁剪框的 上左距离、宽高
+    const T_IMG_ = {
+      w: 340,
+      h: 340,
+      top: 0,
+      left: 0,
+      diffH: 0
+    } // 裁剪图片 的 上左距离、宽高
+    const CTX_DRAW = {
+      w: 340,
+      h: 340,
+      x: 0,
+      y: 0,
+      sw: 0,
+      sh: 0,
+      sx: 0,
+      sy: 0,
+    } // canvas 绘制时需要的参数
 
-    let pageX = 0
-    let pageY = 0
+    let isTouch = false // 是否触发触摸事件
+    let isDrag  = false // 当前是否为拖动事件
 
-    let startX = 0
-    let startY = 0
-    let isTouch = false
-
-    let xx = 0
-    let yy = 0
-    let ww = 0
-    let hh = 0
-    let t = {}
-
-
-    function getFile(event) {
-      const file = event.target.files[0]
-
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = function () {
-
-        drawImage(reader.result)
+    window.onload = function() {
+      if (!isTouchEvent) {
+        app.classList.add('none')
+        alert('暂不支持当前设备、请使用其他设备打开')
+        return
       }
+
+      initImg()
     }
 
-    window.onload = function () {
-      drawImage()
-    }
 
+    // 初始化 touch-img 的宽高比例
+    function initImg(src = './assets/a.jpg') {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      const img = new Image()
+      let list = []
+      
+      img.src = src
+      img.onload = function() {
 
-    function move1(event) {
-
-      if (!isTouch) return
-      event.preventDefault()
-
-      let e = event.touches[0];
-
-      let offsetX = e.pageX - pageX;
-      let offsetY = e.pageY - pageY;
-      if (hh === 450) {
-
-        t.sx = startX + offsetX;
-
-        console.log(t.sx)
-        if (t.sx <= 0) {
-          t.sx = 0;
-        } else if (t.sx >= (hh - 450)) {
-          t.sx = hh - 450;
+        if (img.width < img.height) {
+          list = getWidthFix(img.width, img.height, DEFAULTS.w, img.height)
+        } else {
+          list = getHeightFix(img.width, img.height, img.width, DEFAULTS.h)
         }
-      }
+        const [w, h] = list
 
-      drawImage('', t.sx, 0)
-      // t.cutImage();
+        const pixel = getPixelRatio(ctx)
+
+        // 根据像素比 将画布放大 - 保证海报清晰度
+        canvas.width  = w * pixel
+        canvas.height = h * pixel
+        ctx.scale(pixel, pixel)
+        ctx.drawImage(img, 0, 0, w, h)
+
+        // 画布默认 x、y
+        CTX_DRAW.x = (DEFAULTS.w - CTX_DRAW.w) / 2
+        CTX_DRAW.y = (DEFAULTS.h - CTX_DRAW.h) / 2
+        CTX_DRAW.h = h
+        CTX_DRAW.w = w
+
+        // 裁剪框默认 距离
+        BOX_.top  = (window.innerHeight - BOX_.h) / 2
+        BOX_.left = (window.innerWidth  - BOX_.w) / 2
+        box.style = `width: ${BOX_.w}px; height: ${BOX_.h}px; top:${BOX_.top}px; left: ${BOX_.left}px`
+
+        // 裁剪图片默认 距离 + 宽高
+        T_IMG_.w = w 
+        T_IMG_.h = h
+        T_IMG_.top  = (window.innerHeight - h) / 2
+        T_IMG_.left = (window.innerWidth  - w) / 2
+        T_IMG_.diffH = T_IMG_.top - BOX_.top
+        T_IMG.style = `width: ${w}px; height: ${h}px;)`
+
+        formData.src = canvas.toDataURL('image/jpeg', 1)
+        T_IMG.src = formData.src
+      }
     }
 
-    function start(event) {
-      let e = event.touches[0];
 
+    T_IMG.addEventListener('touchstart', touchStart, { passive: false })
+    T_IMG.addEventListener('touchmove', touchMove, { passive: false })
+    T_IMG.addEventListener('touchend', touchEnd, { passive: false })
+
+    function touchStart(event) {
+      event.preventDefault(); 
+      const touches = event.touches
+      const leng    = touches.length 
       isTouch = true
 
-      pageX = e.pageX;
-      pageY = e.pageY;
-
-      startX = xx;
-      startY = yy;
+      // 单指存在为 `拖动`
+      if (leng === 1) dragStart(touches)
     }
 
-    function end(evnet) {
-      console.log('33')
+    function touchMove(event) {
+      if (!isTouch) return
+      event.preventDefault(); 
+
+      const touches = event.touches
+      const leng    = touches.length 
+
+      if (leng === 1 && isDrag) dragMove(touches)
+    }
+
+    function touchEnd(event) {
+    
       isTouch = false
+      isDrag  = false
+
+      // if (T_IMG_.left <= BOX_.left) {
+      //   T_IMG.style.left = BOX_.left + 'px'
+      // }
     }
 
-    function drawImage(src, sx = 0, sy = 0) {
-      canvas.width = 375
-      canvas.height = 812
-      const ctx = canvas.getContext('2d')
 
-      ctx.clearRect(0, 0, 375, 812)
+
+    // 保存图片
+    function saveImg() {
+      const canvas = document.createElement('canvas')
+      const ctx    = canvas.getContext('2d')
+      const pixel = getPixelRatio(ctx)
+
       const img = new Image()
+      img.src = formData.src
+      img.onload = function() {
+        canvas.width  = DEFAULTS.w * pixel
+        canvas.height = DEFAULTS.h * pixel
+        ctx.scale(pixel, pixel)
 
-      img.src = src || './assets/c.jpg'
-      img.onload = function () {
-       
-        const [x, y, dw, dh] = getAspectFill(img.width, img.height, 450, 450)
+        CTX_DRAW.x = T_IMG_.left === BOX_.left ? T_IMG_.left - BOX_.left : T_IMG_.left
+        CTX_DRAW.y = T_IMG_.top - BOX_.top === T_IMG_.diffH ? T_IMG_.top - BOX_.top : T_IMG_.top - Math.abs(T_IMG_.diffH)
 
-        if (!sx) {
-          ww = dw
-          hh = dh
-          xx = 38
-          yy = 210
-
-          ctx.drawImage(img, x, y, dw, dh)
-        } else {
-          ctx.drawImage(img,sx, (450 - sy) / 2, 450, 450, x, y, dw, dh)
-        }
-
-        // prev.src = canvas.toDataURL('image/jpeg', 1)
-        // return
-        const img2 = new Image()
-        img2.src = './assets/bc.png'
-        img2.onload = function () {
-          ctx.globalAlpha = 0.5
-          ctx.drawImage(img2, 0, 0, 375, 812)
-
-          // prev.classList.remove('none')
-          // input.classList.add('none')
-          // prev.src = canvas.toDataURL('image/jpeg', 1)
-        }
-
+ 
+        ctx.drawImage(img,  CTX_DRAW.x, CTX_DRAW.y,  CTX_DRAW.w,  CTX_DRAW.h)
+  
+        const src = canvas.toDataURL('image/jpeg', 1)
+        preview.src = src
+        crop.classList.add('none')
+        preview.style = `width: ${DEFAULTS.w}px; height: ${DEFAULTS.h}px`
+        preview.classList.remove('none')
       }
     }
 
 
+    // ------------------------
+    // ------------------------
+    function getWidthFix(width, height, styleW, styleH) {
 
+      let [w, h, s] = []
 
-    function getAspectFill(width, height, styleW, styleH) {
+      // 获取图片本身宽高 与 样式宽高的比例
+      s = styleW / width 
 
-      let [dw, dh] = []
-      let scale = width / height
+      w = styleW
+      h = styleH * s
 
-      // 判断图片的短边是宽还是高
-      if (width < height) {
-        dw = styleW
-        dh = styleW / scale
-      } else {
-        dw = styleH * scale
-        dh = styleH
+      return [w, h] 
+    }
+
+    function getHeightFix(width, height, styleW, styleH) {
+
+      let [w, h, s] = []
+
+      // 获取图片本身宽高 与 样式宽高的比例
+      s = styleH / height 
+
+      w = styleW * s
+      h = styleH
+
+      return [w, h] 
+    }
+
+    function getPixelRatio(context) {
+      let backingStore = context.backingStorePixelRatio ||
+          context.webkitBackingStorePixelRatio ||
+          context.mozBackingStorePixelRatio ||
+          context.msBackingStorePixelRatio ||
+          context.oBackingStorePixelRatio ||
+          context.backingStorePixelRatio || 1;
+
+      return (window.devicePixelRatio || 1) / backingStore;
+    }
+
+    function throttle(func, wait = 2000) {
+      let timeout;
+      return function() {
+        const context = this;
+        const args    = arguments;
+        if (!timeout) {
+          timeout = setTimeout(() => {
+            timeout = null
+            func.apply(context, args)
+          }, wait);
+        }
       }
-      let x = (375 - dw) / 2
-      let y = (812 - dh) / 2
-      return [x, y, dw, dh]
     }
   </script>
 </body>
-
 </html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片裁剪</title>
+  <link rel="stylesheet" href="./index.css">
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #app {
+      background-color: #000;
+      /* max-width: 450px;
+      min-width: 320px; */
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center; */
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+
+    <img class="page-bc" src="./assets/bc.png" alt="">
+
+
+    <div class="box">
+      <img style="left: 0px; top:190px;" class="bc-avatar" src="" alt="">
+    </div>
+
+
+    <div onclick="drawSubmit(event)" class="submit">确认</div>
+    <!-- <input onchange="getFile(event)" type="file" accept="image/*"> -->
+
+    <img class="prev none" src="" alt="">
+
+    <!-- <canvas  id="canvas"></canvas> -->
+
+  </div>
+
+  <script>
+    const input = document.getElementsByTagName('input')[0]
+    const canvas = document.getElementById('canvas')
+    const prev = document.getElementsByClassName('prev')[0]
+    const page = document.getElementsByClassName('page-bc')[0]
+    const avatar = document.getElementsByClassName('bc-avatar')[0]
+    const box = document.getElementsByClassName('box')[0]
+
+    let pageX = 0
+    let pageY = 0
+
+    let startX = 0
+    let startY = 0
+    let isTouch = false
+
+    let xx = 0
+    let yy = 0
+    let ww = 0
+    let hh = 0
+    let sx = 0
+    let sy = 190
+    let ss = 2
+    let t = {}
+    let absSX = 0
+    let absEX = 0
+    let one = false
+
+
+    function getFile(event) {
+      const file = event.target.files[0]
+
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = function () {
+
+        drawImage(reader.result)
+      }
+    }
+
+    window.onload = function () {
+      // drawImage()
+      getAvatar()
+    }
+
+    function getAvatar() {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      const img = new Image()
+      img.src = './assets/b.jpg'
+      img.onload = function() {
+
+        if (img.width < img.height) {
+          const [w, h] = getWidthFix(img.width, img.height, 450, img.height)
+          canvas.width = w
+          canvas.height = h
+          ctx.drawImage(img, 0, 0, w, h)
+        } else {
+          const [w, h] = getHeightFix(img.width, img.height, img.width, 450)
+          canvas.width = w
+          canvas.height = h
+          ctx.drawImage(img, 0, 0, w, h)
+        }
+        ww = canvas.width
+        hh = canvas.height
+        console.log(canvas.width, canvas.height)
+        avatar.src = canvas.toDataURL('image/jpeg', 1)
+      }
+    }
+
+    function getWidthFix(width, height, styleW, styleH) {
+
+      let [w, h, s] = []
+
+      // 获取图片本身宽高 与 样式宽高的比例
+      s = styleW / width 
+
+      w = styleW
+      h = styleH * s
+
+      return [w, h] 
+    }
+
+    function getHeightFix(width, height, styleW, styleH) {
+
+      let [w, h, s] = []
+
+      // 获取图片本身宽高 与 样式宽高的比例
+      s = styleH / height 
+
+      w = styleW * s
+      h = styleH
+
+      return [w, h] 
+    }
+
+
+    avatar.addEventListener('touchstart', function(event) {
+ 
+
+      if (event.touches.length === 1) {
+        pageX = event.touches[0].pageX; //起始点击位置
+        pageY = event.touches[0].pageY; //起始点击位置
+        xx = avatar.style.left; //元素左边距
+        yy = avatar.style.top; //元素上边距
+        one = true
+      } else if(event.touches.length === 2) {
+        one = false
+        let point1 = event.touches[0];
+        let point2 = event.touches[1];
+        let deltaX = Math.abs(point2.pageX - point1.pageX);
+        let deltaY = Math.abs(point2.pageY - point1.pageY);
+        absSX = Math.sqrt(deltaX*deltaX+deltaY*deltaY);
+      }
+    })
+
+    avatar.addEventListener('touchmove', function(event) {
+      event.preventDefault(); //取消事件的默认动作。
+      
+      if (event.touches.length === 1 && one) {
+        startX = event.touches[0].pageX; //当前屏幕上所有触摸点的集合列表
+        startY = event.touches[0].pageY; //当前屏幕上所有触摸点的集合列表
+        let left = parseFloat(startX) - parseFloat(pageX) + parseFloat(xx)
+        let top  = parseFloat(startY) - parseFloat(pageY) + parseFloat(yy)
+
+        // left = left < 0 ? 0 : left
+        // top  = top  < 0 ? 0 : top
+        // console.log(left, top)
+        sx = left
+        sy = top
+        avatar.style.left = `${left}px`
+        avatar.style.top  = `${top}px`
+      } else if (event.touches.length === 2 && !one) {
+        let point1 = event.touches[0];
+        let point2 = event.touches[1];
+        let deltaX = Math.abs(point2.pageX - point1.pageX);
+        let deltaY = Math.abs(point2.pageY - point1.pageY);
+        absEX = Math.sqrt(deltaX*deltaX+deltaY*deltaY);
+        scale = absEX / absSX
+
+        ss = scale
+        avatar.style.transform = `scale(${scale})`
+        // avatar.style.width = `${ww + scale}`
+        // avatar.style.height  = `${(hh + scale / ss)}px;`
+      }
+    })
+
+    avatar.addEventListener('touchend', function() {
+      ww = avatar.width
+    })
+
+
+    function drawSubmit() {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      avatar.style.transformOrigin = 'top left'
+
+      const img = new Image()
+      img.src = avatar.src
+      img.onload = function() {
+        canvas.width = 375
+        canvas.height = 812
+        if (ss == 1) {
+          ctx.drawImage(img, sx, sy, img.width, img.height)
+        } else {
+          let www = img.width * ss
+          let hhh = img.height * ss
+ 
+          sx = sx > 0 ? -sx : sx
+          sy = sy > 0 ? -sy : Math.abs(sy)
+          console.log(sx, '?')
+          ctx.drawImage(img, sx, sy, 450, 450, 0, 0, www, hhh)
+        }
+
+        const img2 = new Image()
+        img2.src = './assets/bc.png'
+        img2.onload = function () {
+  
+          ctx.globalAlpha = 0.5
+          ctx.drawImage(img2, 0, 0, 375, 812)
+
+          const src = canvas.toDataURL('image/jpeg', 1)
+          page.classList.add('none')
+          box.classList.add('none')
+          prev.classList.remove('none')
+          prev.src = src
+        }
+      }
+    }
+
+   
+    function drawImage(src, sx = 0, sy = 0) {
+      canvas.width = 375
+      canvas.height = 812
+      const ctx = canvas.getContext('2d')
+
+      ctx.clearRect(0, 0, 375, 812)
+      const img = new Image()
+
+      img.src = src || './assets/c.jpg'
+      img.onload = function () {
+       
+        const [x, y, dw, dh] = getAspectFill(img.width, img.height, 450, 450)
+
+        if (!sx) {
+          ww = dw
+          hh = dh
+          xx = 38
+          yy = 210
+
+          ctx.drawImage(img, x, y, dw, dh)
+        } else {
+          ctx.drawImage(img, 0, 0, 450, 450, sx, sy, dw, dh)
+        }
+
+        // prev.src = canvas.toDataURL('image/jpeg', 1)
+        return
+        const img2 = new Image()
+        img2.src = './assets/bc.png'
+        img2.onload = function () {
+          ctx.globalAlpha = 0.5
+          ctx.drawImage(img2, 0, 0, 375, 812)
+
+          // prev.classList.remove('none')
+          // input.classList.add('none')
+          // prev.src = canvas.toDataURL('image/jpeg', 1)
+        }
+
+      }
+    }
+
+
+
+
+    function getAspectFill(width, height, styleW, styleH) {
+
+      let [dw, dh] = []
+      let scale = width / height
+
+      // 判断图片的短边是宽还是高
+      if (width < height) {
+        dw = styleW
+        dh = styleW / scale
+      } else {
+        dw = styleH * scale
+        dh = styleH
+      }
+      let x = (375 - dw) / 2
+      let y = (812 - dh) / 2
+      return [x, y, dw, dh]
+    }
+  </script>
+</body>
+
+</html>

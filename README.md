@@ -15,4 +15,4 @@ nice little example
 > [《H5键盘高度》](works/keyboard-height)<br>
 > [《H5横屏》](works/horizontal-screen-animation)<br>
 > [《自定义相机》](works/camera)<br>
-> [《Canvas-图片裁剪》](works/picture-cropping)
+> [《Canvas-图片裁剪》](works/picture-cropping/public)
