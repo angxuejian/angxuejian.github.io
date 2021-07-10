@@ -33,7 +33,9 @@
       <img  class="touch-img" src="" alt="">
 
       <div class="buts">
-        <div></div>
+        <div onclick="scaleImgBig()" class="scale">放大</div>
+        <div onclick="scaleImgMini()" class="scale">放小</div>
+
         <div onclick="saveImg()" class="confirm">确认</div>
       </div>
     </div>
@@ -42,6 +44,7 @@
   </div>
 
   <script src="./js/touch.js"></script>
+  <script src="./js/util.js"></script>
   <script>
     const app     = document.getElementById('app')
     const box     = document.getElementsByClassName('box')[0]
@@ -69,7 +72,8 @@
       top: 0,
       left: 0,
       diffH: 0,
-      diffW: 0
+      diffW: 0,
+      scale: 1
     } // 裁剪图片 的 上左距离、宽高
     const CTX_DRAW = {
       w: 340,
@@ -84,6 +88,8 @@
 
     let isTouch = false // 是否触发触摸事件
     let isDrag  = false // 当前是否为拖动事件
+    let isTScal = false // 是否触发过触摸事件
+
 
     window.onload = function() {
       if (!isTouchEvent) {
@@ -97,7 +103,7 @@
 
 
     // 初始化 touch-img 的宽高比例
-    function initImg(src = './assets/a.jpg') {
+    function initImg(src = './assets/b.jpg') {
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
       const img = new Image()
@@ -125,7 +131,6 @@
         BOX_.top  = (window.innerHeight - BOX_.h) / 2
         BOX_.left = (window.innerWidth  - BOX_.w) / 2
         box.style = `width: ${BOX_.w}px; height: ${BOX_.h}px; top:${BOX_.top}px; left: ${BOX_.left}px`
-
         // 裁剪图片默认 距离 + 宽高
         T_IMG_.w = w 
         T_IMG_.h = h
@@ -141,8 +146,8 @@
         // 画布默认 x、y
         CTX_DRAW.x = T_IMG_.left - BOX_.left
         CTX_DRAW.y = T_IMG_.top - BOX_.top
-        CTX_DRAW.h = h
-        CTX_DRAW.w = w
+        CTX_DRAW.h = T_IMG_.h
+        CTX_DRAW.w = T_IMG_.w
       }
     }
 
@@ -162,6 +167,7 @@
 
     function touchMove(event) {
       if (!isTouch) return
+      isTScal = true
       event.preventDefault(); 
 
       const touches = event.touches
@@ -194,9 +200,11 @@
         canvas.height = DEFAULTS.h * pixel
         ctx.scale(pixel, pixel)
 
+        if (T_IMG_.scale === 1) ctx.drawImage(img,  CTX_DRAW.x, CTX_DRAW.y,  CTX_DRAW.w,  CTX_DRAW.h)
+        else ctx.drawImage(img, CTX_DRAW.x, CTX_DRAW.y,  CTX_DRAW.w,  CTX_DRAW.h)
 
-        ctx.drawImage(img,  CTX_DRAW.x, CTX_DRAW.y,  CTX_DRAW.w,  CTX_DRAW.h)
 
+        
         const src = canvas.toDataURL('image/jpeg', 1)
         preview.src = src
         crop.classList.add('none')
@@ -206,57 +214,79 @@
     }
 
 
-    // ------------------------
-    // ------------------------
-    function getWidthFix(width, height, styleW, styleH) {
+    // 缩放图片
+    function scaleImgBig() {
 
-      let [w, h, s] = []
+      if (T_IMG_.scale >= 3) return
 
-      // 获取图片本身宽高 与 样式宽高的比例
-      s = styleW / width 
+     
+      let left = 0
+      let top  = 0
 
-      w = styleW
-      h = styleH * s
+       // 当宽度相等时、左右不可移动
+      if (T_IMG_.left === BOX_.left) {
+        left = 0
+      } else left = T_IMG_.left
 
-      return [w, h] 
+      // 当高度相等时、上下不可移动
+      if (T_IMG_.top === BOX_.top) {
+        top = 0
+      } else top = T_IMG_.top
+
+      
+
+      T_IMG_.scale += 0.2
+      T_IMG.style.transform = `translate3d(${!isTScal ? 0 : left}px, ${!isTScal ? 0 : top}px, 0px) scale(${T_IMG_.scale})`
+      
+
+      let h  = T_IMG_.h * T_IMG_.scale
+      let w  = T_IMG_.w * T_IMG_.scale
+      // T_IMG_.top  = (window.innerHeight - h) / 2
+      // T_IMG_.left = (window.innerWidth  - w) / 2
+
+      let a = (window.innerHeight - h) / 2
+      let b = (window.innerWidth  - w) / 2
+      T_IMG_.diffH = a  - BOX_.top
+      T_IMG_.diffW = b - BOX_.left
+
+      CTX_DRAW.x =b - BOX_.left
+      CTX_DRAW.y = a - BOX_.top
+      CTX_DRAW.h = h
+      CTX_DRAW.w = w
     }
 
-    function getHeightFix(width, height, styleW, styleH) {
+    function scaleImgMini() {
 
-      let [w, h, s] = []
+      if (T_IMG_.scale <= 1) return
 
-      // 获取图片本身宽高 与 样式宽高的比例
-      s = styleH / height 
+           
+      let left = 0
+      let top  = 0
 
-      w = styleW * s
-      h = styleH
+       // 当宽度相等时、左右不可移动
+      if (T_IMG_.left === BOX_.left) {
+        left = 0
+      } else left = T_IMG_.left
 
-      return [w, h] 
-    }
+      // 当高度相等时、上下不可移动
+      if (T_IMG_.top === BOX_.top) {
+        top = 0
+      } else top = T_IMG_.top
 
-    function getPixelRatio(context) {
-      let backingStore = context.backingStorePixelRatio ||
-          context.webkitBackingStorePixelRatio ||
-          context.mozBackingStorePixelRatio ||
-          context.msBackingStorePixelRatio ||
-          context.oBackingStorePixelRatio ||
-          context.backingStorePixelRatio || 1;
+      T_IMG_.scale -= 0.2
+      T_IMG.style.transform = `translate3d(${!isTScal ? 0 : left}px, ${!isTScal ? 0 : top}px, 0px) scale(${T_IMG_.scale})`
+    
+      let h  = T_IMG_.h * T_IMG_.scale
+      let w  = T_IMG_.w * T_IMG_.scale
+      T_IMG_.top  = (window.innerHeight - h) / 2
+      T_IMG_.left = (window.innerWidth  - w) / 2
+      T_IMG_.diffH = T_IMG_.top  - BOX_.top
+      T_IMG_.diffW = T_IMG_.left - BOX_.left
 
-      return (window.devicePixelRatio || 1) / backingStore;
-    }
-
-    function throttle(func, wait = 2000) {
-      let timeout;
-      return function() {
-        const context = this;
-        const args    = arguments;
-        if (!timeout) {
-          timeout = setTimeout(() => {
-            timeout = null
-            func.apply(context, args)
-          }, wait);
-        }
-      }
+      CTX_DRAW.x = T_IMG_.left - BOX_.left
+      CTX_DRAW.y = T_IMG_.top - BOX_.top
+      CTX_DRAW.h = h
+      CTX_DRAW.w = w
     }
   </script>
 </body>
