@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
   <title>图片裁剪</title>
 
   <link rel="stylesheet" href="./css/index.css">
@@ -21,6 +22,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: #000;
+
     }
   </style>
 </head>
@@ -33,8 +36,8 @@
       <img  class="touch-img" src="" alt="">
 
       <div class="buts">
-        <div onclick="scaleImgBig()" class="scale">放大</div>
-        <div onclick="scaleImgMini()" class="scale">放小</div>
+        <!-- <div onclick="scaleImgBig()" class="scale">放大</div> -->
+        <!-- <div onclick="scaleImgMini()" class="scale">放小</div> -->
 
         <div onclick="saveImg()" class="confirm">确认</div>
       </div>
@@ -103,7 +106,7 @@
 
 
     // 初始化 touch-img 的宽高比例
-    function initImg(src = './assets/b.jpg') {
+    function initImg(src = './assets/a.jpg') {
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
       const img = new Image()
@@ -160,9 +163,10 @@
       const touches = event.touches
       const leng    = touches.length 
       isTouch = true
-
-      // 单指存在为 `拖动`
+      // 单指存在为 `拖动` 双指存在为 `缩放`
       if (leng === 1) dragStart(touches)
+      
+      if (leng === 2) scaleStart(touches)
     }
 
     function touchMove(event) {
@@ -173,7 +177,10 @@
       const touches = event.touches
       const leng    = touches.length 
 
+      // 单指存在为 `拖动` 双指存在为 `缩放`
       if (leng === 1 && isDrag) dragMove(touches)
+      
+      if (leng === 2 && !isDrag) scaleMove(touches)
     }
 
     function touchEnd(event) {
@@ -181,6 +188,8 @@
       isTouch = false
 
       if (isDrag) dragEnd()
+
+      if (!isDrag) scaleEnd()
 
       isDrag  = false
     }
@@ -249,7 +258,7 @@
       T_IMG_.diffH = a  - BOX_.top
       T_IMG_.diffW = b - BOX_.left
 
-      CTX_DRAW.x =b - BOX_.left
+      CTX_DRAW.x = b - BOX_.left
       CTX_DRAW.y = a - BOX_.top
       CTX_DRAW.h = h
       CTX_DRAW.w = w

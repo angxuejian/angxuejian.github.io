@@ -1,7 +1,4 @@
 
-#app {
-  background-color: #000;
-}
 .box {
   position:fixed;
   z-index: 1;
@@ -15,6 +12,9 @@
 }
 .touch-img {
   position: fixed;
+  transform: translateZ(0px);
+  -webkit-transform: translateZ(0px);
+  -webkit-overflow-scrolling: touch
 }
 
 
