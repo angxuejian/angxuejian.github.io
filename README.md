@@ -1,8 +1,8 @@
 <!-- # angxuejian.github.io -->
 
 
-- [前端面试题](./front-end/question.md)
-- [moto.basics](./moto.basics/index.html)
+- [前端面试题](https://angxuejian.github.io/front-end/question.html)
+- [moto.basics](https://angxuejian.github.io/moto.basics/index.html)
 
 <!-- ## Interesting
 > ![Moto UI示例](image/a.jpg)<br>
