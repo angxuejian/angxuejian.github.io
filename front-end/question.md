@@ -2,7 +2,7 @@
 
 ## Vue
 
-1. [vue-router 是什么](./answer.md#vue-1)
+1. [vue-router 是什么](./answer.md#http-1)
 1. [slot 是什么]()
 1. [vue 的指令有哪些]()
 1. [自适应是怎么做的]()
