@@ -1,18 +1,11 @@
-<!-- # angxuejian.github.io -->
+# angxuejian.github.io
 
 
-- [前端面试题](https://angxuejian.github.io/front-end/question.html)
-- [moto.basics](https://angxuejian.github.io/moto.basics/index.html)
+<!-- - [moto.basics](https://angxuejian.github.io/moto.basics/index.html) -->
 
 <!-- ## Interesting
-> ![Moto UI示例](image/a.jpg)<br>
 > [《自定义相机》](works/camera)<br>
 > [《Canvas-图片裁剪》](works/picture-cropping/public)<br>
-
-这里是[公司项目](works/work.md)
-
-## Front-end.basics
-> [《CSS-样式》](front-end.basics/css.html)
 
 ## Test
 > [《Canvas-海报》](works/canvas-poster/public)<br>
