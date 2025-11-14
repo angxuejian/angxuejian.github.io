@@ -1,1 +1,0 @@
-import{_ as i,c as a,o as l,ag as t}from"./chunks/framework.Cycwnjj0.js";const _=JSON.parse('{"title":"指南","description":"","frontmatter":{},"headers":[],"relativePath":"guide.md","filePath":"guide.md"}'),s={name:"guide.md"};function o(n,e,r,p,c,d){return l(),a("div",null,[...e[0]||(e[0]=[t("",7)])])}const g=i(s,[["render",o]]);export{_ as __pageData,g as default};
