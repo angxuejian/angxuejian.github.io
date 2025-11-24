@@ -1,1 +1,0 @@
-import{_ as o,e as t,a as n,o as c,r}from"./index-CzTHPWGw.js";const a={},s={style:{width:"100%",height:"100%","background-color":"#ededed"}};function d(_,i){const e=r("OarWindow");return c(),t("div",s,[n(e)])}const p=o(a,[["render",d]]);export{p as default};

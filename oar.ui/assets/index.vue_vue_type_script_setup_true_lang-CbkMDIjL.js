@@ -1,1 +1,0 @@
-import{d as n,o as s,e as r,j as t}from"./index-CzTHPWGw.js";const l=n({__name:"index",props:{code:{}},setup(e){return console.log(e.code),(o,p)=>(s(),r("div",null,[t(o.$slots,"default")]))}});export{l as _};
