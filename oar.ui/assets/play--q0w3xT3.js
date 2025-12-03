@@ -1,0 +1,1 @@
+import{d as a,e as o,a as s,r as n,o as t,_ as c}from"./index-DnjXYqT5.js";const _={class:"play-container"},r=a({__name:"play",setup(p){return(d,l)=>{const e=n("OarDashedLoading");return t(),o("div",_,[s(e)])}}}),m=c(r,[["__scopeId","data-v-a1e24a41"]]);export{m as default};
